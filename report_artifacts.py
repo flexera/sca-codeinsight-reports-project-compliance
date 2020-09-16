@@ -49,6 +49,7 @@ def generate_html_report(reportData):
     statusApprovedIcon = os.path.join(scriptDirectory, "html-assets/images/status_approved_selected.png")
     statusRejectedIcon = os.path.join(scriptDirectory, "html-assets/images/status_rejected_selected.png")
     statusDraftIcon = os.path.join(scriptDirectory, "html-assets/images/status_draft_ready_selected.png")
+    alertIcon = os.path.join(scriptDirectory, "html-assets/images/icon_alert.png")
 
     logger.debug("cssFile: %s" %cssFile)
     logger.debug("imageFile: %s" %logoImageFile)
@@ -56,6 +57,7 @@ def generate_html_report(reportData):
     logger.debug("statusApprovedIcon: %s" %statusApprovedIcon)
     logger.debug("statusRejectedIcon: %s" %statusRejectedIcon)
     logger.debug("statusDraftIcon: %s" %statusDraftIcon)
+    logger.debug("alertIcon: %s" %alertIcon)
 
 
     #########################################################
@@ -65,6 +67,7 @@ def generate_html_report(reportData):
     encodedStatusApprovedIcon = encodeImage(statusApprovedIcon)
     encodedStatusRejectedIcon = encodeImage(statusRejectedIcon)
     encodedStatusDraftIcon = encodeImage(statusDraftIcon)
+    encodedAlertIcon = encodeImage(alertIcon)
 
     # Grab the current date/time for report date stamp
     now = datetime.now().strftime("%B %d, %Y at %H:%M:%S")
@@ -197,10 +200,10 @@ def generate_html_report(reportData):
 
         html_ptr.write("        <tr> \n")
 
-
-        html_ptr.write("            <td class='text-left'><a href='%s/codeinsight/FNCI#myprojectdetails/?id=%s&tab=projectInventory&pinv=%s'>%s</a></td>\n" %(baseURL, projectID, inventoryID, inventoryItem))
+        # Name
+        html_ptr.write("            <td class='text-left'><a href='%s/codeinsight/FNCI#myprojectdetails/?id=%s&tab=projectInventory&pinv=%s' target='_blank'>%s</a></td>\n" %(baseURL, projectID, inventoryID, inventoryItem))
  
-
+        # Priority
         if inventoryPriority == "High":
             html_ptr.write("            <td data-sort='4' class='text-left text-nowrap'><span class='dot dot-red'></span>P1 - %s</td>\n" %(inventoryPriority))
         elif inventoryPriority == "Medium":
@@ -212,8 +215,8 @@ def generate_html_report(reportData):
         else:
             html_ptr.write("            <td class='text-left text-nowrap'><span class='dot dot-gray'></span>%s</td>\n" %(inventoryPriority))
 
-        
-        html_ptr.write("            <td class='text-left'><a href='%s'>%s</a></td>\n" %(componentUrl, componentName))
+        # Component
+        html_ptr.write("            <td class='text-left'><a href='%s' target='_blank'>%s</a></td>\n" %(componentUrl, componentName))
         
         # Version
         if componentVersionName == "N/A":
@@ -221,20 +224,24 @@ def generate_html_report(reportData):
         elif componentVersionDetails["isOldVersion"]:
             html_ptr.write("            <td class='text-left' style='color:red' title='The latest version is " + componentVersionDetails["latestVersion"] + ". Your version is " + str(componentVersionDetails["numBack"]) + " versions back from the latest version. You should consider upgrading to a more recent version of this component.'>%s</td>\n" %(componentVersionName))
         else:
-            html_ptr.write("            <td class='text-left' title='The latest version is " + componentVersionDetails["latestVersion"] + ". Your version is within " + str(componentVersionDetails["maxAllowedNumBack"]) + " versions back from the latest version.'>%s</td>\n" %(componentVersionName))
+            html_ptr.write("            <td class='text-left'>%s</td>\n" %(componentVersionName))
 
-        html_ptr.write("            <td class='text-left'><a href='%s'>%s</a></td>\n" %(selectedLicenseUrl, selectedLicenseName))
+        # License
+        html_ptr.write("            <td class='text-left'><a href='%s' target='_blank'>%s</a></td>\n" %(selectedLicenseUrl, selectedLicenseName))
+
+        # Vulnerabilities
         html_ptr.write("            <td class='text-center text-nowrap' data-sort='%s' >\n" %numCriticalVulnerabilities)
         
         # Write in single line to remove spaces between btn spans
         html_ptr.write("                <span class='btn btn-critical'>%s</span><span class='btn btn-high'>%s</span><span class='btn btn-medium'>%s</span><span class='btn btn-low'>%s</span><span class='btn btn-none'>%s</span>\n" %(numCriticalVulnerabilities,numHighVulnerabilities,numMediumVulnerabilities, numLowVulnerabilities, numNoneVulnerabilities))
 
+        # Review Status
         if inventoryReviewStatus == "Approved":
-            html_ptr.write("            <td class='text-left text-nowrap' style='color:green;'><img src='data:image/png;base64, %s' width='15px' height='15px'> %s</td>\n" %(encodedStatusApprovedIcon.decode('utf-8'), inventoryReviewStatus))
+            html_ptr.write("            <td class='text-left text-nowrap' style='color:green;'><img src='data:image/png;base64, %s' width='15px' height='15px' style='margin-top: -2px;'> %s</td>\n" %(encodedStatusApprovedIcon.decode('utf-8'), inventoryReviewStatus))
         elif inventoryReviewStatus == "Rejected":
-            html_ptr.write("            <td class='text-left text-nowrap' style='color:red;'><img src='data:image/png;base64, %s' width='15px' height='15px'> %s</td>\n" %(encodedStatusRejectedIcon.decode('utf-8'), inventoryReviewStatus))
+            html_ptr.write("            <td class='text-left text-nowrap' style='color:red;'><img src='data:image/png;base64, %s' width='15px' height='15px' style='margin-top: -2px;'> %s</td>\n" %(encodedStatusRejectedIcon.decode('utf-8'), inventoryReviewStatus))
         elif inventoryReviewStatus == "Draft":
-            html_ptr.write("            <td class='text-left text-nowrap' style='color:gray;'><img src='data:image/png;base64, %s' width='15px' height='15px'> %s</td>\n" %(encodedStatusDraftIcon.decode('utf-8'), inventoryReviewStatus))
+            html_ptr.write("            <td class='text-left text-nowrap' style='color:black;'><img src='data:image/png;base64, %s' width='15px' height='15px' style='margin-top: -2px;'> %s</td>\n" %(encodedStatusDraftIcon.decode('utf-8'), "Not Reviewed"))
         else:
             html_ptr.write("            <td class='text-left text-nowrap'>%s</td>\n" %(inventoryReviewStatus))
 
@@ -242,13 +249,13 @@ def generate_html_report(reportData):
 
         # Compliance Issues
         if len(inventorycomplianceIssuesType) > 0:
-            issues = "<td class='text-left text-nowrap'>"
+            issues = "<td class='text-left text-nowrap' style='color:red;'>"
             for x in range(len(inventorycomplianceIssuesType)):
-                issues += "<span title='" + inventorycomplianceIssuesMessage[x] + "'>" + inventorycomplianceIssuesType[x] + "</span><br/>\n"
+                issues += "<span class='dot dot-red'></span><span title='" + inventorycomplianceIssuesMessage[x] + "'>" + inventorycomplianceIssuesType[x] + "</span><br/>\n"
             issues +="</td>\n"
             html_ptr.write(issues)
         else:
-            html_ptr.write("            <td title='This item does not have any compliance issues.'>None</td>\n")
+            html_ptr.write("            <td title='This item does not have any compliance issues.'><span class='dot dot-green'></span>None</td>\n")
 
         html_ptr.write("        </tr>\n") 
     html_ptr.write("    </tbody>\n")

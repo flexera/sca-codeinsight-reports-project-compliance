@@ -42,15 +42,21 @@ def gather_data_for_report(baseURL, projectID, authToken, reportName):
         complianceIssuesType = []
         complianceIssuesMessage = []
 
+        # Id
+        inventoryID = inventoryItem["id"]
+
+        # Name
         inventoryItemName = inventoryItem["name"]
 
+        # Component
         componentName = inventoryItem["componentName"]
-
         componentId = inventoryItem["componentId"]
+        componentUrl = inventoryItem["componentUrl"]
 
+        # Priority
         inventoryPriority = inventoryItem["priority"]
 
-        # Component version
+        # Version
         componentVersionName = inventoryItem["componentVersionName"]
         componentVersionDetails = getVersionData(baseURL, componentId, componentVersionName, authToken)
         if componentVersionName == "N/A":
@@ -60,25 +66,23 @@ def gather_data_for_report(baseURL, projectID, authToken, reportName):
             complianceIssuesType.append("Old version")
             complianceIssuesMessage.append("This item has an old version. Upgrading to a more recent version is recommended.")
 
+        # License
         selectedLicenseName = inventoryItem["selectedLicenseName"]
-
         selectedLicenseSPDXIdentifier = inventoryItem["selectedLicenseSPDXIdentifier"]
-
         selectedLicensePriority = inventoryItem["selectedLicensePriority"]
         if selectedLicensePriority == 1:
             complianceIssuesType.append("P1 license")
             complianceIssuesMessage.append("This item has a viral or strong copyleft license. Depnding on your usage there may be additional oblilgations. Please consult with your legal team.")
-
-        componentUrl = inventoryItem["componentUrl"]
-
         selectedLicenseUrl = inventoryItem["selectedLicenseUrl"]
 
-        inventoryID = inventoryItem["id"]
-
+        # Review status
         inventoryReviewStatus = inventoryItem["inventoryReviewStatus"]
         if inventoryReviewStatus == "Rejected":
             complianceIssuesType.append("Item rejected")
             complianceIssuesMessage.append("This item has been rejected for use. Please consult with your legal and/or security team for further guidance.")
+        elif inventoryReviewStatus == "Draft":
+            complianceIssuesType.append("Item not reviewed")
+            complianceIssuesMessage.append("This item has not been reviewed for use. Please consult with your legal and/or security team for further guidance.")
 
         logger.debug("Processing iventory items %s of %s" %(currentItem, totalNumberIventory))
         logger.debug("    %s" %(inventoryItemName))
@@ -184,7 +188,7 @@ def get_vulnerability_summary(vulnerabilities):
 def getVersionData(baseURL, componentId, componentVersionName, authToken):
     logger.info("Entering getVersionData")
 
-    MAX_ALLOWED_NUMBER_BACK = 5
+    MAX_ALLOWED_NUMBER_BACK = 10
 
     isOldVersion = False
 
