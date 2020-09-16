@@ -33,7 +33,7 @@ def gather_data_for_report(baseURL, projectID, authToken, reportName):
     projectName = projectInventoryResponse["projectName"]
     inventoryItems = projectInventoryResponse["inventoryItems"]
     totalNumberIventory = len(inventoryItems)
-    currentItem=0
+    currentItem = 0
 
     for inventoryItem in inventoryItems:
         currentItem +=1
@@ -46,13 +46,13 @@ def gather_data_for_report(baseURL, projectID, authToken, reportName):
 
         componentName = inventoryItem["componentName"]
 
-        componentID = inventoryItem["componentID"]
+        componentId = inventoryItem["componentId"]
 
         inventoryPriority = inventoryItem["priority"]
 
         # Component version
         componentVersionName = inventoryItem["componentVersionName"]
-        componentVersionDetails = getVersionData(baseURL, componentID, componentVersionName, authToken)
+        componentVersionDetails = getVersionData(baseURL, componentId, componentVersionName, authToken)
         if componentVersionName == "N/A":
             complianceIssuesType.append("Unknown version")
             complianceIssuesMessage.append("This item has an unknown version. Additional analysis is recommended.")
