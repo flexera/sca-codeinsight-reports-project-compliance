@@ -59,6 +59,10 @@ def gather_data_for_report(baseURL, projectID, authToken, reportName):
         # Version
         componentVersionName = inventoryItem["componentVersionName"]
         componentVersionDetails = getVersionData(baseURL, componentId, componentVersionName, authToken)
+        # If none of the component versions survive the filtering, force version to N/A to create a compliance issue
+        if len(componentVersionDetails) == 0:
+           componentVersionName = "N/A"
+
         if componentVersionName == "N/A":
             complianceIssuesType.append("Unknown version")
             complianceIssuesMessage.append("This item has an unknown version. Additional analysis is recommended.")
@@ -188,9 +192,15 @@ def get_vulnerability_summary(vulnerabilities):
 def getVersionData(baseURL, componentId, componentVersionName, authToken):
     logger.info("Entering getVersionData")
 
+    versionDetails = {}
+
     MAX_ALLOWED_NUMBER_BACK = 10
 
     isOldVersion = False
+
+    # If bad component ID return empty dictionary
+    if componentId == "N/A":
+        return versionDetails
 
     # Get details for component
     try:
@@ -207,6 +217,10 @@ def getVersionData(baseURL, componentId, componentVersionName, authToken):
         if version.lower() not in versionToSkip:
             versions.append(version)
 
+    # If no versions return empty dictionary
+    if len(versions) == 0:
+        return versionDetails
+
     versions.sort(reverse=True)
 
     counter = 0
@@ -218,7 +232,6 @@ def getVersionData(baseURL, componentId, componentVersionName, authToken):
     if counter > MAX_ALLOWED_NUMBER_BACK:
         isOldVersion = True
 
-    versionDetails = {}
     versionDetails["isOldVersion"] = isOldVersion
     versionDetails["numBack"] = counter
     versionDetails["latestVersion"] = versions[0]
