@@ -29,7 +29,7 @@ else:
 
 ###################################################################################
 #  Set up logging handler to allow for different levels of logging to be capture
-logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', datefmt='%Y-%m-%d:%H:%M:%S', filename="_project_inventory_report.log", filemode='w',level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', datefmt='%Y-%m-%d:%H:%M:%S', filename="_project_compliance_report.log", filemode='w',level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 ####################################################################################
@@ -45,7 +45,7 @@ parser.add_argument("-baseURL", "--baseURL", help="Code Insight Core Server Prot
 #----------------------------------------------------------------------#
 def main():
 
-	reportName = "Project Inventory Report"
+	reportName = "Project Compliance Report"
 
 	logger.info("Creating %s - %s" %(reportName, _version.__version__))
 	print("Creating %s - %s" %(reportName, _version.__version__))

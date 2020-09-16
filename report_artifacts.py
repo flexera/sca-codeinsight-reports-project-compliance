@@ -144,16 +144,17 @@ def generate_html_report(reportData):
 
     html_ptr.write("    <thead>\n")
     html_ptr.write("        <tr>\n")
-    html_ptr.write("            <th colspan='7' class='text-center'><h4>%s</h4></th>\n" %projectName) 
+    html_ptr.write("            <th colspan='8' class='text-center'><h4>%s</h4></th>\n" %projectName) 
     html_ptr.write("        </tr>\n") 
     html_ptr.write("        <tr>\n") 
-    html_ptr.write("            <th style='width: 25%' class='text-center'>INVENTORY ITEM</th>\n") 
-    html_ptr.write("            <th style='width: 10%' class='text-center'>PRIORITY</th>\n") 
+    html_ptr.write("            <th style='width: 20%' class='text-center'>INVENTORY ITEM</th>\n") 
+    html_ptr.write("            <th style='width: 7%' class='text-center'>PRIORITY</th>\n") 
     html_ptr.write("            <th style='width: 15%' class='text-center'>COMPONENT</th>\n")
-    html_ptr.write("            <th style='width: 8%' class='text-center'>VERSION</th>\n")
+    html_ptr.write("            <th style='width: 7%' class='text-center'>VERSION</th>\n")
     html_ptr.write("            <th style='width: 10%' class='text-center'>LICENSE</th>\n") 
-    html_ptr.write("            <th style='width: 18%' class='text-center'>VULNERABILITIES</th>\n")
-    html_ptr.write("            <th style='width: 14%' class='text-center'>REVIEW STATUS</th>\n")
+    html_ptr.write("            <th style='width: 15%' class='text-center'>VULNERABILITIES</th>\n")
+    html_ptr.write("            <th style='width: 10%' class='text-center'>REVIEW STATUS</th>\n")
+    html_ptr.write("            <th style='width: 16%' class='text-center'>COMPLIANCE ISSUES</th>\n")
     html_ptr.write("        </tr>\n")
     html_ptr.write("    </thead>\n")  
     html_ptr.write("    <tbody>\n")  
@@ -165,6 +166,7 @@ def generate_html_report(reportData):
     for inventoryItem in sorted(inventoryData):
         componentName = inventoryData[inventoryItem]["componentName"]
         componentVersionName = inventoryData[inventoryItem]["componentVersionName"]
+        componentVersionDetails = inventoryData[inventoryItem]["componentVersionDetails"]
         inventoryPriority = inventoryData[inventoryItem]["inventoryPriority"]
         selectedLicenseName = inventoryData[inventoryItem]["selectedLicenseName"]
         selectedLicensePriority = inventoryData[inventoryItem]["selectedLicensePriority"]
@@ -173,6 +175,8 @@ def generate_html_report(reportData):
         selectedLicenseUrl = inventoryData[inventoryItem]["selectedLicenseUrl"]
         inventoryID = inventoryData[inventoryItem]["inventoryID"]
         inventoryReviewStatus = inventoryData[inventoryItem]["inventoryReviewStatus"]
+        inventorycomplianceIssuesType = inventoryData[inventoryItem]["inventorycomplianceIssuesType"]
+        inventorycomplianceIssuesMessage = inventoryData[inventoryItem]["inventorycomplianceIssuesMessage"]
 
         logger.debug("Reporting for inventory item %s" %inventoryItem)
 
@@ -210,7 +214,15 @@ def generate_html_report(reportData):
 
         
         html_ptr.write("            <td class='text-left'><a href='%s'>%s</a></td>\n" %(componentUrl, componentName))
-        html_ptr.write("            <td class='text-left'>%s</td>\n" %(componentVersionName))
+        
+        # Version
+        if componentVersionName == "N/A":
+            html_ptr.write("            <td class='text-left'>%s</td>\n" %(componentVersionName))
+        elif componentVersionDetails["isOldVersion"]:
+            html_ptr.write("            <td class='text-left' style='color:red' title='The latest version is " + componentVersionDetails["latestVersion"] + ". Your version is " + str(componentVersionDetails["numBack"]) + " versions back from the latest version. You should consider upgrading to a more recent version of this component.'>%s</td>\n" %(componentVersionName))
+        else:
+            html_ptr.write("            <td class='text-left' title='The latest version is " + componentVersionDetails["latestVersion"] + ". Your version is within " + str(componentVersionDetails["maxAllowedNumBack"]) + " versions back from the latest version.'>%s</td>\n" %(componentVersionName))
+
         html_ptr.write("            <td class='text-left'><a href='%s'>%s</a></td>\n" %(selectedLicenseUrl, selectedLicenseName))
         html_ptr.write("            <td class='text-center text-nowrap' data-sort='%s' >\n" %numCriticalVulnerabilities)
         
@@ -227,6 +239,16 @@ def generate_html_report(reportData):
             html_ptr.write("            <td class='text-left text-nowrap'>%s</td>\n" %(inventoryReviewStatus))
 
         html_ptr.write("            </td>\n")
+
+        # Compliance Issues
+        if len(inventorycomplianceIssuesType) > 0:
+            issues = "<td class='text-left text-nowrap'>"
+            for x in range(len(inventorycomplianceIssuesType)):
+                issues += "<span title='" + inventorycomplianceIssuesMessage[x] + "'>" + inventorycomplianceIssuesType[x] + "</span><br/>\n"
+            issues +="</td>\n"
+            html_ptr.write(issues)
+        else:
+            html_ptr.write("            <td title='This item does not have any compliance issues.'>None</td>\n")
 
         html_ptr.write("        </tr>\n") 
     html_ptr.write("    </tbody>\n")
