@@ -188,6 +188,7 @@ def generate_html_report(reportData):
         numMediumVulnerabilities = 0
         numLowVulnerabilities = 0
         numNoneVulnerabilities = 0
+        numTotalVulnerabilities = 0
 
         try:
             numCriticalVulnerabilities = vulnerabilityData["numCriticalVulnerabilities"]
@@ -195,6 +196,7 @@ def generate_html_report(reportData):
             numMediumVulnerabilities = vulnerabilityData["numMediumVulnerabilities"]
             numLowVulnerabilities = vulnerabilityData["numLowVulnerabilities"]
             numNoneVulnerabilities = vulnerabilityData["numNoneVulnerabilities"]
+            numTotalVulnerabilities = vulnerabilityData["numTotalVulnerabilities"]
         except:
             logger.debug("    No vulnerability data")
 
@@ -233,7 +235,10 @@ def generate_html_report(reportData):
         html_ptr.write("            <td class='text-center text-nowrap' data-sort='%s' >\n" %numCriticalVulnerabilities)
         
         # Write in single line to remove spaces between btn spans
-        html_ptr.write("                <span class='btn btn-critical'>%s</span><span class='btn btn-high'>%s</span><span class='btn btn-medium'>%s</span><span class='btn btn-low'>%s</span><span class='btn btn-none'>%s</span>\n" %(numCriticalVulnerabilities,numHighVulnerabilities,numMediumVulnerabilities, numLowVulnerabilities, numNoneVulnerabilities))
+        if numTotalVulnerabilities > 0:
+            html_ptr.write("                <span class='btn btn-critical'>%s</span><span class='btn btn-high'>%s</span><span class='btn btn-medium'>%s</span><span class='btn btn-low'>%s</span><span class='btn btn-none'>%s</span>\n" %(numCriticalVulnerabilities,numHighVulnerabilities,numMediumVulnerabilities, numLowVulnerabilities, numNoneVulnerabilities))
+        else:
+            html_ptr.write("                <span class='btn btn-no-vulns'>0</span>\n")
 
         # Review Status
         if inventoryReviewStatus == "Approved":

@@ -184,6 +184,7 @@ def get_vulnerability_summary(vulnerabilities):
     vulnerabilityData["numMediumVulnerabilities"] = numMediumVulnerabilities
     vulnerabilityData["numLowVulnerabilities"] = numLowVulnerabilities
     vulnerabilityData["numNoneVulnerabilities"] = numNoneVulnerabilities
+    vulnerabilityData["numTotalVulnerabilities"] = len(vulnerabilities)
 
     return vulnerabilityData
 
