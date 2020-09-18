@@ -168,6 +168,7 @@ def generate_html_report(reportData):
     # table with the results
     for inventoryItem in sorted(inventoryData):
         componentName = inventoryData[inventoryItem]["componentName"]
+        componentId = inventoryData[inventoryItem]["componentId"]
         componentVersionName = inventoryData[inventoryItem]["componentVersionName"]
         componentVersionDetails = inventoryData[inventoryItem]["componentVersionDetails"]
         inventoryPriority = inventoryData[inventoryItem]["inventoryPriority"]
@@ -221,12 +222,15 @@ def generate_html_report(reportData):
         html_ptr.write("            <td class='text-left'><a href='%s' target='_blank'>%s</a></td>\n" %(componentUrl, componentName))
         
         # Version
-        if componentVersionName == "N/A":
+        if componentId == 55720:
             html_ptr.write("            <td class='text-left'>%s</td>\n" %(componentVersionName))
-        elif componentVersionDetails["isOldVersion"]:
-            html_ptr.write("            <td class='text-left' style='color:red' title='The latest version is " + componentVersionDetails["latestVersion"] + ". Your version is " + str(componentVersionDetails["numBack"]) + " versions back from the latest version. You should consider upgrading to a more recent version of this component.'>%s</td>\n" %(componentVersionName))
         else:
-            html_ptr.write("            <td class='text-left'>%s</td>\n" %(componentVersionName))
+            if componentVersionName == "N/A":
+                html_ptr.write("            <td class='text-left'>%s</td>\n" %(componentVersionName))
+            elif componentVersionDetails["isOldVersion"]:
+                html_ptr.write("            <td class='text-left' style='color:red' title='The latest version is " + componentVersionDetails["latestVersion"] + ". Your version is " + str(componentVersionDetails["numBack"]) + " versions back from the latest version. You should consider upgrading to a more recent version of this component.'>%s</td>\n" %(componentVersionName))
+            else:
+                html_ptr.write("            <td class='text-left'>%s</td>\n" %(componentVersionName))
 
         # License
         html_ptr.write("            <td class='text-left'><a href='%s' target='_blank'>%s</a></td>\n" %(selectedLicenseUrl, selectedLicenseName))

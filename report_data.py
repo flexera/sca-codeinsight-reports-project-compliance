@@ -53,22 +53,33 @@ def gather_data_for_report(baseURL, projectID, authToken, reportName):
         componentId = inventoryItem["componentId"]
         componentUrl = inventoryItem["componentUrl"]
 
+        # Compliance message for linux kernel
+        # Hack for perf issue related to get versions API call that times out
+        if componentId == 55720:
+            complianceIssuesType.append("Version not analyzed")
+            complianceIssuesMessage.append("This versions for this component have not beeen analyzed. Manual inspection is suggested.")
+
         # Priority
         inventoryPriority = inventoryItem["priority"]
 
         # Version
         componentVersionName = inventoryItem["componentVersionName"]
-        componentVersionDetails = getVersionData(baseURL, componentId, componentVersionName, authToken)
-        # If none of the component versions survive the filtering, force version to N/A to create a compliance issue
-        if len(componentVersionDetails) == 0:
-           componentVersionName = "N/A"
+        if componentId != 55720:
+            componentVersionDetails = getVersionData(baseURL, componentId, componentVersionName, authToken)
+        else:
+            componentVersionDetails = {}
 
-        if componentVersionName == "N/A":
-            complianceIssuesType.append("Unknown version")
-            complianceIssuesMessage.append("This item has an unknown version. Additional analysis is recommended.")
-        elif componentVersionDetails["isOldVersion"]:
-            complianceIssuesType.append("Old version")
-            complianceIssuesMessage.append("This item has an old version. Upgrading to a more recent version is recommended.")
+        # If none of the component versions survive the filtering, force version to N/A to create a compliance issue
+        if componentId != 55720 and len(componentVersionDetails) == 0:
+            componentVersionName = "N/A"
+
+        if componentId != 55720:
+            if componentVersionName == "N/A":
+                complianceIssuesType.append("Unknown version")
+                complianceIssuesMessage.append("This item has an unknown version. Additional analysis is recommended.")
+            elif componentVersionDetails["isOldVersion"]:
+                complianceIssuesType.append("Old version")
+                complianceIssuesMessage.append("This item has an old version. Upgrading to a more recent version is recommended.")
 
         # License
         selectedLicenseName = inventoryItem["selectedLicenseName"]
@@ -122,6 +133,7 @@ def gather_data_for_report(baseURL, projectID, authToken, reportName):
 
         inventoryData[inventoryItemName] = {
             "componentName" : componentName,
+            "componentId" : componentId,
             "componentVersionName" : componentVersionName,
             "componentVersionDetails" : componentVersionDetails,
             "selectedLicenseName" : selectedLicenseName,
