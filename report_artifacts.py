@@ -239,13 +239,13 @@ def generate_html_report(reportData):
         html_ptr.write("            <td class='text-center text-nowrap' data-sort='%s' >\n" %numCriticalVulnerabilities)
         
         if numTotalVulnerabilities > 0:
-            html_ptr.write("                <span class='btn btn-critical'>%s</span> \n" %(numCriticalVulnerabilities));
-            html_ptr.write("                <span class='btn btn-high'>%s</span> \n" %(numHighVulnerabilities));
-            html_ptr.write("                <span class='btn btn-medium'>%s</span> \n" %(numMediumVulnerabilities));
-            html_ptr.write("                <span class='btn btn-low'>%s</span> \n" %(numLowVulnerabilities));
-            html_ptr.write("                <span class='btn btn-none'>%s</span>\n" %(numNoneVulnerabilities))
+            html_ptr.write("                <span class='btn btn-vuln btn-critical'>%s</span> \n" %(numCriticalVulnerabilities));
+            html_ptr.write("                <span class='btn btn-vuln btn-high'>%s</span> \n" %(numHighVulnerabilities));
+            html_ptr.write("                <span class='btn btn-vuln btn-medium'>%s</span> \n" %(numMediumVulnerabilities));
+            html_ptr.write("                <span class='btn btn-vuln btn-low'>%s</span> \n" %(numLowVulnerabilities));
+            html_ptr.write("                <span class='btn btn-vuln btn-none'>%s</span>\n" %(numNoneVulnerabilities))
         else:
-            html_ptr.write("                <span class='btn btn-no-vulns'>None</span>\n")
+            html_ptr.write("                <span class='btn btn-vuln tn-no-vulns'>None</span>\n")
 
         # Review Status
         if inventoryReviewStatus == "Approved":
