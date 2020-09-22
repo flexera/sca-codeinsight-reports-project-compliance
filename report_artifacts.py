@@ -245,7 +245,7 @@ def generate_html_report(reportData):
             html_ptr.write("                <span class='btn btn-vuln btn-low'>%s</span> \n" %(numLowVulnerabilities));
             html_ptr.write("                <span class='btn btn-vuln btn-none'>%s</span>\n" %(numNoneVulnerabilities))
         else:
-            html_ptr.write("                <span class='btn btn-vuln tn-no-vulns'>None</span>\n")
+            html_ptr.write("                <span class='btn btn-vuln btn-no-vulns'>None</span>\n")
 
         # Review Status
         if inventoryReviewStatus == "Approved":
